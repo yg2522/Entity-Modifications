@@ -1,0 +1,34 @@
+public interface IEntity : IDisposable
+{
+    void SaveChanges();
+
+    Guid ContextId { get; }
+
+    void InitializeContext(int commandTimeout = -1);
+
+    string GetConnectionString(int connectionTimeout = -1);
+
+    Interfaces.ISqlConnection GetConnection(int connectionTimeout = -1);
+    void ExecuteBulkCopyCommand(Interfaces.ISqlBulkCopy bulkCopy);
+}
+
+public interface I<#=code.Escape(container)#> : IEntity, IDisposable
+{
+<#
+    foreach (var entitySet in container.BaseEntitySets.OfType<EntitySet>())
+    {
+#>
+    <#=codeStringGenerator.IDbSet(entitySet)#>
+<#
+    }
+#>
+
+<#
+    foreach (var edmFunction in container.FunctionImports)
+    {
+#>
+    <#=codeStringGenerator.ComposableInterfaceMethod(edmFunction, modelNamespace)#>
+<#
+    }
+#>
+}
