@@ -172,12 +172,12 @@ if (!loader.IsLazyLoadingEnabled(container))
         return builder.ConnectionString;
     }
 
-    public Interfaces.ISqlConnection GetConnection(int connectionTimeout = -1)
+    public ISqlConnection GetConnection(int connectionTimeout = -1)
     {
         return new LtSqlConnection(this.GetConnectionString(connectionTimeout));
     }
 
-    public void ExecuteBulkCopyCommand(Interfaces.ISqlBulkCopy bulkCopy)
+    public void ExecuteBulkCopyCommand(ISqlBulkCopy bulkCopy)
     {
         using(System.Data.SqlClient.SqlBulkCopy sqlBulkCopy = new System.Data.SqlClient.SqlBulkCopy(this.GetConnectionString()))
         {
