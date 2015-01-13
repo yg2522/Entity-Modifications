@@ -24,6 +24,7 @@ using System;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 <#
 if (container.FunctionImports.Any())
 {
@@ -226,8 +227,61 @@ public interface IEntity : IDisposable
 
     string GetConnectionString(int connectionTimeout = -1);
 
-    Interfaces.ISqlConnection GetConnection(int connectionTimeout = -1);
-    void ExecuteBulkCopyCommand(Interfaces.ISqlBulkCopy bulkCopy);
+    ISqlConnection GetConnection(int connectionTimeout = -1);
+
+    void ExecuteBulkCopyCommand(ISqlBulkCopy bulkCopy);
+}
+
+public interface ISqlConnection : IDisposable
+{
+    void Open();
+
+    void Close();
+
+    ConnectionState State { get; }
+
+    ISqlCommand CreateSqlCommand(string commandName, CommandType commandType, int commandTimeout = 90);
+}
+
+public interface ISqlBulkCopy
+{
+    int BulkCopyTimeout { get; set; }
+    int BatchSize { get; set; }
+    string DestinationTableName { get; set; }
+    DataTable Table { get; set; }
+}
+
+public interface ISqlCommand : IDisposable
+{
+    string CommandText { get; set; }
+
+    int CommandTimeout { get; set; }
+
+    CommandType CommandType { get; set; }
+
+    ISqlConnection Connection { get; set; }
+
+    SqlParameterCollection Parameters { get; }
+
+    void AddParameter(SqlParameter parameter);
+
+    IAsyncResult BeginExecuteReader(AsyncCallback callback, object stateObject);
+
+    IDataReader EndExecuteReader(IAsyncResult asyncResult);
+
+    void BeginExecuteNonQuery();
+
+    void BeginExecuteNonQuery(AsyncCallback callback, object stateObject);
+
+    int EndExecuteNonQuery(IAsyncResult result);
+
+    int ExecuteNonQuery();
+
+    object ExecuteScalar();
+
+    void Cancel();
+
+    IDataReader ExecuteReader();
 }
 
 public interface I<#=code.Escape(container)#> : IEntity, IDisposable
@@ -250,7 +304,6 @@ public interface I<#=code.Escape(container)#> : IEntity, IDisposable
     }
 #>
 }
-
 <#
 
 if (!String.IsNullOrEmpty(codeNamespace))
