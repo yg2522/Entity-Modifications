@@ -2,7 +2,7 @@
 <#@ include file="EF6.Utility.CS.ttinclude"#><#@
  output extension=".cs"#><#
 
-const string inputFile = @"LMCU_Online_Banking.edmx";
+const string inputFile = @"EntityName.edmx";
 var textTransform = DynamicTextTransformation.Create(this);
 var code = new CodeGenerationTools(this);
 var ef = new MetadataTools(this);
